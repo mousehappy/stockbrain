@@ -1,0 +1,20 @@
+CREATE TABLE stock_crawl_scheduler(
+symbol	varchar(20) not null default '' comment	 '股票代码',
+crawl_type varchar(30) not null default 'default' comment '爬取数据类型',
+data_start_day date default null comment '数据起始日期',
+data_end_day date default null comment '数据终止日期',
+last_crawl_day date default null comment '最新爬取日期',
+crawl_start timestamp default null comment '爬取启动时间',
+crawl_end timestamp default null comment '爬取结束时间',
+crawl_status varchar(10) default null comment '爬取状态: running/success/error',
+status varchar(10) default 'inuse' comment '任务状态: inuse/disable',
+gmt_modify timestamp default current_timestamp on update current_timestamp,
+gmt_create timestamp default current_timestamp,
+primary key (crawl_type, symbol),
+key idx_data_start_day(`data_start_day`),
+key idx_data_end_day(`data_end_day`),
+key idx_last_crawl_day(`last_crawl_day`),
+key idx_crawl_start(`crawl_start`),
+key idx_status(`status`),
+key idx_crawl_status(`crawl_status`)
+);

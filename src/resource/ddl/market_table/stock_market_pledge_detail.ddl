@@ -1,0 +1,16 @@
+CREATE TABLE stock_market_pledge_detail(
+`ts_code` varchar(20) not null default '' comment 'Y	TS股票代码',
+`ann_date` varchar(20) not null default '' comment 'Y	公告日期',
+`holder_name` varchar(20) not null default '' comment 'Y	股东名称',
+`pledge_amount` float(24) comment 'Y	质押数量',
+`start_date` varchar(20) not null default '' comment 'Y	质押开始日期',
+`end_date` varchar(20) not null default '' comment 'Y	质押结束日期',
+`is_release` varchar(20) not null default '' comment 'Y	是否已解押',
+`release_date` varchar(20) not null default '' comment 'Y	解押日期',
+`pledgor` varchar(20) not null default '' comment 'Y	质押方',
+`holding_amount` float(24) comment 'Y	持股总数',
+`pledged_amount` float(24) comment 'Y	质押总数',
+`p_total_ratio` float(24) comment 'Y	本次质押占总股本比例',
+`h_total_ratio` float(24) comment 'Y	持股总数占总股本比例',
+`is_buyback` varchar(20) not null default '' comment 'Y	是否回购',
+key (ts_code, ann_date, holder_name)) COMMENT '股权质押明细';

@@ -1,0 +1,18 @@
+CREATE TABLE stock_finance_dividend(
+`ts_code` varchar(20) not null default '' comment 'Y	TS代码',
+`end_date` varchar(20) not null default '' comment 'Y	分红年度',
+`ann_date` varchar(20) not null default '' comment 'Y	预案公告日',
+`div_proc` varchar(20) not null default '' comment 'Y	实施进度',
+`stk_div` float(20) comment 'Y	每股送转',
+`stk_bo_rate` float(20) comment 'Y	每股送股比例',
+`stk_co_rate` float(20) comment 'Y	每股转增比例',
+`cash_div` float(20) comment 'Y	每股分红（税后）',
+`cash_div_tax` float(20) comment 'Y	每股分红（税前）',
+`record_date` varchar(20) not null default '' comment 'Y	股权登记日',
+`ex_date` varchar(20) not null default '' comment 'Y	除权除息日',
+`pay_date` varchar(20) not null default '' comment 'Y	派息日',
+`div_listdate` varchar(20) not null default '' comment 'Y	红股上市日',
+`imp_ann_date` varchar(20) not null default '' comment 'Y	实施公告日',
+`base_date` varchar(20) not null default '' comment 'N	基准日',
+`base_share` float(20) comment 'N	基准股本（万）',
+key (ts_code, end_date));
