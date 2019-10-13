@@ -1,3 +1,5 @@
+import math
+
 from common.db.db_base import DBBase
 from common.tushare_client.ts_client import ts_token
 import tushare as ts
@@ -63,3 +65,28 @@ class BaseTask(StockDBBase):
             return True
         return False
         # calendar.monthrange(now_dt.)
+
+    def get_season_end_date(self):
+        month = self.dt.month
+        year = self.dt.year
+        season = int(math.ceil(month / 3))
+        # next_season_dt = None
+        if season <= 3:
+            next_season_dt = arrow.get(year, season * 3 + 1, 1)
+        else:
+            next_season_dt = arrow.get(year + 1, 1, 1)
+        season_end_dt = next_season_dt.replace(days=-1)
+        return season_end_dt.date().strftime('%Y-%m-%d')
+
+    def get_last_season_end_date(self):
+        month = self.dt.month
+        year = self.dt.year
+        season_idx = math.ceil(month / 3.0)
+        season = int(season_idx)
+        # next_season_dt = None
+        if season > 1:
+            next_season_dt = arrow.get(year, (season-1) * 3 + 1, 1)
+        else:
+            next_season_dt = arrow.get(year, 1, 1)
+        season_end_dt = next_season_dt.replace(days=-1)
+        return season_end_dt.date().strftime('%Y-%m-%d')

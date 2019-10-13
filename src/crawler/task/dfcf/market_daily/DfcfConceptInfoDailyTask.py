@@ -6,11 +6,10 @@ import time
 import arrow
 import requests
 
-from common.db.db_base import DBBase
 from common.util.StringUtils import genRandomString
 from crawler.base.db_base.stock_db_base import logger
 from crawler.task.BaseTask import BaseTask
-from arrow import Arrow
+import numpy as np
 import listcompare
 
 '''
@@ -24,7 +23,7 @@ import listcompare
     "ts_code": "000001.SZ",
     "gmt_modify": "2019-09-07 14:01:51",
     "last_crawl_day": "2018-01-15",
-    "crawl_type": "BasicTradeInfo",
+    "crawl_type": "DfcfConceptInfoDailyTask",
     "dt": "2019-09-07",
     "crawl_start": "2019-09-01 12:00:00",
     "crawl_status": "waiting",
@@ -34,39 +33,35 @@ import listcompare
 API_NAME = 'dfcf_season_forecast'
 
 '''
-业绩预告: http://data.eastmoney.com/bbsj/201906/yjyg.html
+板块大盘: http://quote.eastmoney.com/center/boardlist.html#concept_board
 
-url_example: http://dcfm.eastmoney.com//em_mutisvcexpandinterface/api/js/get?type=YJBB21_YJYG&token=70f12f2f4f091e459a279469fe49eca5&st=ndate&sr=-1&p=2&ps=30&js=var%20xsFnzmed={pages:(tp),data:%20(x),font:(font)}&filter=(IsLatest=%27T%27)(securitytypecode%20in%20(%27058001001%27,%27058001002%27))(enddate=^2019-09-30^)&rt=52288381
+url_example: http://37.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=1000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:90+t:3&fields=f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f14,f15,f16,f17,f18,f20,f21,f62,f63,f64,f65,f66,f67,f68,f69,f70,f71,f72,f73,f74,f75,f76,f77,f78,f79,f80,f81,f82,f83,f84,f85,f86,f87&_=1569638458193
 '''
 
-base_url = 'http://dcfm.eastmoney.com//em_mutisvcexpandinterface/api/js/get?type=YJBB21_YJYG&token=70f12f2f4f091e459a279469fe49eca5&st=ndate&sr=-1&p={pageNo}&ps={pageSize}&js=var%20{varName}={pages:(tp),data:%20(x),font:(font)}&filter=(IsLatest=%27T%27)(securitytypecode%20in%20(%27058001001%27,%27058001002%27))(enddate=^{enddate}^)&rt={rt}'
+base_url = 'http://{randint}.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=1000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:90+t:3&fields=f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f14,f15,f16,f17,f18,f20,f21,f62,f63,f64,f65,f66,f67,f68,f69,f70,f71,f72,f73,f74,f75,f76,f77,f78,f79,f80,f81,f82,f83,f84,f85,f86,f87&_={ts}'
 
 
-class DfcfReportBaseTask(BaseTask):
+class DfcfConceptInfoDailyTask(BaseTask):
     def __init__(self):
-        super(DfcfReportBaseTask, self).__init__()
-        self.stock_map = {}
-        self.init_stock_map()
-        self.token = '70f12f2f4f091e459a279469fe49eca5'
-        self.db_table = ''
-        self.order_column = ''
-        self.date_columns = []
-        self.base_url = ''
-        self.pageSize = 30
+        super(DfcfConceptInfoDailyTask, self).__init__()
 
     def close(self):
-        super(DfcfReportBaseTask, self).close()
-        
-    def init_stock_map(self):
-        sql = 'select ts_code, symbol as scode from stock_list'
-        stock_list = self.query(sql)
-        for stock in stock_list:
-            self.stock_map[stock['scode']] = stock['ts_code']
+        super(DfcfConceptInfoDailyTask, self).close()
 
-    def get_latest_record(self, table, order_column):
-        sql = 'select * from %s order by %s desc limit 1' % (table, order_column)
-        latest_record = self.query(sql)
-        return latest_record
+    def get_crawl_date(self):
+        now_dt = arrow.now()
+        hour = now_dt.hour
+        if hour < 8:
+            ts_date = now_dt.replace(days=-1).format('YYYYMMDD')
+        elif hour > 15:
+            ts_date = now_dt.format('YYYYMMDD')
+        else:
+            raise RuntimeError('Illegal crawl time: %s' % now_dt)
+        sql = "select * from stock_trade_date where cal_date <= '%s' and is_open=1 order by cal_date desc limit 1;" % ts_date
+        trade_dt = self.query(sql)
+        if not trade_dt:
+            raise RuntimeError('Failed to load trade date: %s' % ts_date)
+        return trade_dt[0]['cal_date']
 
     def run(self, task_define):
         # Arrow.now().date()
@@ -74,104 +69,24 @@ class DfcfReportBaseTask(BaseTask):
         # end_dt = Arrow.fromdate(task_define['cur_dt'])
         # for r_dt in Arrow.range('day', start_dt, end_dt):
         logger.info('Start to crawl data of task: %s, dt: %s' % (self.__class__.__name__, self.dt))
-        self.dt = arrow.get(task_define['cur_dt'])
-        report_dt = self.get_report_date()
-        logger.info('Crawl task: %s, dt: %s, report date: %s' % (self.__class__.__name__, self.dt, report_dt))
-        pageNo = 1
-        total_pages = -1
-        repoart_data = []
-        latest_record = self.get_latest_record(self.db_table, self.order_column)
-        while True:
-            data = self.get_report_data(pageNo, report_dt)
-            tmp_data = data['data']
-            if total_pages < 0:
-                total_pages = data['pages']
-            logger.info('Crawl task [%s] with page [%s] success, total pages: [%s], current batch size: [%s]' % (
-                self.__class__.__name__, pageNo, total_pages, len(tmp_data)))
-            for record in tmp_data:
-                record['ts_code'] = self.stock_map.get(record['scode'], '')
-                for k,v in record.items():
-                    if v == '-':
-                        record[k] = None
-                # if record['yearearlier'] == '-':
-                #     record['yearearlier'] = None
-            repoart_data.extend(tmp_data)
-            # break
-            if pageNo >= total_pages:
-                break
-            if not self.continue_crawl(tmp_data, latest_record, self.date_columns):
-                break
-            pageNo += 1
-            time.sleep(0.3)
-        logger.info('Task [%s], total crawl records: %s' % (self.__class__.__name__, len(repoart_data)))
+        trade_dt = self.get_crawl_date()
+        cur_ts = arrow.now().timestamp
+        rand_int = np.random.randint(10, 100)
+        url = base_url.replace('{randint}', str(rand_int)).replace('{ts}', str(cur_ts))
+        logger.info('Formatted url: %s' % url)
+        resp_json = requests.get(url).json()
+        records = resp_json['data']['diff']
+        logger.info('Task [%s], total crawl records: %s' % (self.__class__.__name__, len(records)))
         # print json.dumps(repoart_data)
-        self.write_db(self.db_table, repoart_data)
+        records = list(filter(lambda x: x['f2'] != '-', records))
+        for record in records:
+            for k, v in record.items():
+                if v == '-':
+                    record[k] = 0
+            record['dt'] = trade_dt
+        self.write_db('stock_dfcf_concept_daily_info', records)
 
-    def get_report_date(self):
-        pass
 
-    def get_season_end_date(self):
-        month = self.dt.month
-        year = self.dt.year
-        season = int(math.ceil(month / 3))
-        # next_season_dt = None
-        if season <= 3:
-            next_season_dt = arrow.get(year, season * 3 + 1, 1)
-        else:
-            next_season_dt = arrow.get(year + 1, 1, 1)
-        season_end_dt = next_season_dt.replace(days=-1)
-        return season_end_dt.date().strftime('%Y-%m-%d')
-
-    def get_last_season_end_date(self):
-        month = self.dt.month
-        year = self.dt.year
-        season_idx = math.ceil(month / 3.0)
-        season = int(season_idx)
-        # next_season_dt = None
-        if season > 1:
-            next_season_dt = arrow.get(year, (season-1) * 3 + 1, 1)
-        else:
-            next_season_dt = arrow.get(year, 1, 1)
-        season_end_dt = next_season_dt.replace(days=-1)
-        return season_end_dt.date().strftime('%Y-%m-%d')
-
-    def get_report_data(self, pageNo, enddate):
-        pageSize = self.pageSize
-        rt = int(arrow.now().timestamp / 30)
-        varName = genRandomString()
-        cur_url = self.base_url.replace('{token}', self.token).replace('{pageNo}', str(pageNo)).replace('{pageSize}', str(pageSize)).replace(
-            '{rt}', str(rt)).replace('{enddate}', enddate).replace('{varName}', varName)
-        # print cur_url
-        resp = requests.request('GET', cur_url)
-        data = resp.content
-        data = data.split(varName + '=')[1]
-        data = data.replace('data:', '"data":').replace('pages:', '"pages":').replace('font:', '"font":')
-        formatted_data = json.loads(data)
-        font_map = formatted_data.get('font').get("FontMapping", [])
-        for no_map in font_map:
-            code = no_map.get('code').encode('utf-8')
-            value = str(no_map.get('value'))
-            data = data.replace(code, value)
-        return json.loads(data)
-
-    def continue_crawl(self, batch_record, latest_record, date_columns=[]):
-        if not latest_record:
-            return True
-        latest_record = latest_record[0]
-        latest_scode = str(latest_record.get('scode'))
-        latest_data = [latest_record.get(col).strftime('%Y-%m-%dT%H:%M:%S') for col in date_columns]
-        latest_data.append(latest_scode)
-        # latest_enddate = latest_record.get('enddate').strftime('%Y-%m-%dT%H:%M:%S')
-        # latest_ndate = latest_record.get('ndate').strftime('%Y-%m-%dT%H:%M:%S')
-        for record in batch_record:
-            scode = str(record.get('scode'))
-            # enddate = str(record.get('enddate'))
-            # ndate = str(record.get('ndate'))
-            # if latest_scode == scode and latest_enddate == enddate and latest_ndate == ndate:
-            #     return False
-            current_data = [record.get(col) for col in date_columns]
-            current_data.append(scode)
-            if listcompare.compare_list(latest_data, current_data):
-                return False
-        return True
-        # self.ts_client.query('daily')
+if __name__ == '__main__':
+    cit = DfcfConceptInfoDailyTask()
+    cit.run({})

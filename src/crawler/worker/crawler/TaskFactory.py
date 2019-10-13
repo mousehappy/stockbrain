@@ -3,7 +3,7 @@ import json
 import os
 import importlib
 
-TASK_BASE_PATH = '../../task'
+TASK_BASE_PATH = '/Users/wjq/work/stockbrain/src/crawler/task'
 BASE_PKT_PATH = 'crawler.task'
 
 module_map = dict()

@@ -29,6 +29,18 @@ class TaskTestBase(unittest.TestCase):
         self.init_task(task_define)
         self.assertEqual('foo'.upper(), 'FOO')
 
+    def test_DfcfConceptInfoDailyTask(self):
+        task_define = {
+            "symbol": "000001",
+            "ts_code": "000001.SZ",
+            "last_crawl_day": "2019-09-05",
+            "crawl_type": "DfcfConceptInfoDailyTask",
+            "cur_dt": "2019-10-10"
+        }
+        self.init_task(task_define)
+        self.assertEqual('foo'.upper(), 'FOO')
+
+
     def test_dfct_season_forecast(self):
         task_define = {
             "symbol": "000001",
@@ -46,7 +58,7 @@ class TaskTestBase(unittest.TestCase):
             "ts_code": "000001.SZ",
             "last_crawl_day": "2019-09-05",
             "crawl_type": "DfcfSeasonReportTask",
-            "cur_dt": "2019-04-01"
+            "cur_dt": "2019-09-01"
         }
         self.init_task(task_define)
         self.assertEqual('foo'.upper(), 'FOO')

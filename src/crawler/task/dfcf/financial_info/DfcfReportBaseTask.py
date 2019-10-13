@@ -102,7 +102,7 @@ class DfcfReportBaseTask(BaseTask):
             if not self.continue_crawl(tmp_data, latest_record, self.date_columns):
                 break
             pageNo += 1
-            time.sleep(0.3)
+            # time.sleep(0.3)
         logger.info('Task [%s], total crawl records: %s' % (self.__class__.__name__, len(repoart_data)))
         # print json.dumps(repoart_data)
         self.write_db(self.db_table, repoart_data)
@@ -110,30 +110,7 @@ class DfcfReportBaseTask(BaseTask):
     def get_report_date(self):
         pass
 
-    def get_season_end_date(self):
-        month = self.dt.month
-        year = self.dt.year
-        season = int(math.ceil(month / 3))
-        # next_season_dt = None
-        if season <= 3:
-            next_season_dt = arrow.get(year, season * 3 + 1, 1)
-        else:
-            next_season_dt = arrow.get(year + 1, 1, 1)
-        season_end_dt = next_season_dt.replace(days=-1)
-        return season_end_dt.date().strftime('%Y-%m-%d')
 
-    def get_last_season_end_date(self):
-        month = self.dt.month
-        year = self.dt.year
-        season_idx = math.ceil(month / 3.0)
-        season = int(season_idx)
-        # next_season_dt = None
-        if season > 1:
-            next_season_dt = arrow.get(year, (season-1) * 3 + 1, 1)
-        else:
-            next_season_dt = arrow.get(year, 1, 1)
-        season_end_dt = next_season_dt.replace(days=-1)
-        return season_end_dt.date().strftime('%Y-%m-%d')
 
     def get_report_data(self, pageNo, enddate):
         pageSize = self.pageSize
