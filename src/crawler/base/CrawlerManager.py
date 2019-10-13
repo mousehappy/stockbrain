@@ -24,7 +24,7 @@ class CrawlerManager(StockCMDB):
         #     logger.info('Task not finish yet! Count: %s' % c_cnt)
         #     c_cnt += 1
         #     time.sleep(10)
-        self.task_scheduler.stop()
+        # self.task_scheduler.stop()
 
 
 if __name__ == '__main__':
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     # print df.size
     # for row in df[:100]:
     #     print row
-    # print np.random.rand(2, 3, 4)
+    # print np.random.randint(10, 100)
     # N=20
     #
     # df = pd.DataFrame({
