@@ -52,7 +52,7 @@ class DfcfConceptInfoDailyTask(BaseTask):
         now_dt = arrow.now()
         hour = now_dt.hour
         if hour < 8:
-            ts_date = now_dt.replace(days=-1).format('YYYYMMDD')
+            ts_date = now_dt.shift(days=-1).format('YYYYMMDD')
         elif hour > 15:
             ts_date = now_dt.format('YYYYMMDD')
         else:

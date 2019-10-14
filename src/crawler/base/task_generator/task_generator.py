@@ -1,5 +1,5 @@
 import json
-from arrow import Arrow
+import arrow
 from crawler.base.db_base.stock_db_base import StockDBBase
 from crawler.base.task_generator.task_configuration import task_configs
 from crawler.base.db_base.stock_db_base import logger
@@ -8,8 +8,8 @@ from crawler.base.db_base.stock_db_base import logger
 class TaskGenerator(StockDBBase):
     def __init__(self):
         super(TaskGenerator, self).__init__()
-        self.now = Arrow.now()
-        self.dt = Arrow.now().date()
+        self.now = arrow.now()
+        self.dt = arrow.now().date()
 
     def run(self):
         sql = 'select ts_code, symbol, list_date from stock_list'
@@ -26,7 +26,7 @@ class TaskGenerator(StockDBBase):
             init_days = task_config.get('init_days', 365)
             type = task_config.get('type', 1)
             task = None
-            crawl_start_day = self.now.replace(days=-init_days).date()
+            crawl_start_day = self.now.shift(days=-init_days)
             if type == 1:
                 task = {
                     'ts_code': 'all',

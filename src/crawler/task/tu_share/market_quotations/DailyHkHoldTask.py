@@ -31,7 +31,7 @@ class DailyHkHoldTask(BaseTask):
     def run(self, task_define):
         Arrow.now().date()
         start_dt = arrow.get(task_define['last_crawl_day'])  # .strftime('%Y%m%d')
-        end_dt = arrow.get(task_define['cur_dt']).replace(days=-1)
+        end_dt = arrow.get(task_define['cur_dt']).shift(days=-1)
         for r_dt in Arrow.range('day', start_dt, end_dt):
             logger.info('Start to crawl data of task: %s, dt: %s' % (API_NAME, r_dt))
             t_dt = r_dt.strftime('%Y%m%d')

@@ -1,5 +1,6 @@
 #-*- coding: UTF-8 -*-
 import requests
+import zlib
 
 header = {
     'GET': '/recommend/pofriends.json?type=1&code=SZ002231&start=0&count=14&_=1568463240615 HTTP/1.1',

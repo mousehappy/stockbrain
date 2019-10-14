@@ -106,7 +106,7 @@ class DfcfSeasonForecastTask(BaseTask):
             next_season_dt = arrow.get(year, season * 3 + 1, 1)
         else:
             next_season_dt = arrow.get(year + 1, 1, 1)
-        season_end_dt = next_season_dt.replace(days=-1)
+        season_end_dt = next_season_dt.shift(days=-1)
         return season_end_dt.date().strftime('%Y-%m-%d')
 
     def get_season_forecast(self, pageNo, enddate):
