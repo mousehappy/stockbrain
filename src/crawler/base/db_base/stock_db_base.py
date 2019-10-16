@@ -3,7 +3,7 @@ import os
 from datetime import datetime, date
 # import tushare as ts
 
-from arrow import Arrow
+import arrow
 
 from common.db.db_base import DBBase
 import logging
@@ -34,7 +34,8 @@ logger.addHandler(file_handler)
 class StockDBBase(DBBase):
     def __init__(self):
         super(StockDBBase, self).__init__('stock_db')
-        self.dt = Arrow.now().date()
+        self.dt = arrow.now().date()
+        self.crawl_dt = self.get_crawl_date()
         # ts.set_token(ts_token)
         self.ts_client = ts_client
 
@@ -63,6 +64,15 @@ class StockDBBase(DBBase):
                     result[k] = v.strftime('%Y-%m-%d %H:%M:%S')
                 elif isinstance(v, date):
                     result[k] = v.strftime('%Y-%m-%d')
+
+    def get_crawl_date(self):
+        now_dt = arrow.now()
+        hour = now_dt.hour
+        if hour < 8:
+            ts_date = now_dt.shift(days=-1).format('YYYY-MM-DD')
+        elif hour > 15:
+            ts_date = now_dt.format('YYYY-MM-DD')
+        return ts_date
 
 
 if __name__ == '__main__':

@@ -75,7 +75,7 @@ class CrawlerWorker(StockDBBase, Process):
                 self.start_crawl_task(symbol, crawl_type)
                 result = task.run(task_define)
                 task.close()
-                self.finish_crawl_task(symbol, crawl_type, self.dt)
+                self.finish_crawl_task(symbol, crawl_type, self.crawl_dt)
                 result_dict = copy.deepcopy(task_define)
                 result_dict['result'] = result
                 self.result_queue.put(result_dict)
