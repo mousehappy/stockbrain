@@ -1,9 +1,10 @@
-from crawler.base.db_base.stock_db_base import StockDBBase
-#from crawler.base.db_base.stock_db_base import logger
+# from crawler.base.db_base.stock_db_base import StockDBBase
+from common.db.db_base import DBBase
 from common.tushare_client.ts_client import ts_client
 import arrow
 
-class StockCMDB(object):
+
+class StockCMDB(DBBase):
     def __init__(self):
         self.dt = arrow.now()
         self.ts_client = ts_client

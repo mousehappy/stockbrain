@@ -1,7 +1,4 @@
 # -*- coding: UTF-8 -*-
-import datetime
-import re
-
 import torndb
 from db_config import db_configs
 
