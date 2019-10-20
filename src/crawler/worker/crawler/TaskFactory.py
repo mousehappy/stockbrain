@@ -3,7 +3,13 @@ import json
 import os
 import importlib
 
-TASK_BASE_PATH = '/Users/wjq/work/stockbrain/src/crawler/task'
+file_path = os.path.abspath(__file__)
+# print file_path
+src_path = file_path.split('/')
+TASK_BASE_PATH = '/'.join(src_path[:-3]) + '/task'
+# print task_path
+
+# TASK_BASE_PATH = '/Users/wjq/work/stockbrain/src/crawler/task'
 BASE_PKT_PATH = 'crawler.task'
 
 module_map = dict()

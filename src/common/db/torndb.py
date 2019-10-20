@@ -257,7 +257,10 @@ if MySQLdb is not None:
         field_types.append(FIELD_TYPE.VARCHAR)
 
     for field_type in field_types:
-        CONVERSIONS[field_type] = [(FLAG.BINARY, str)] + CONVERSIONS[field_type]
+        if isinstance(CONVERSIONS[field_type], list):
+            CONVERSIONS[field_type] = [(FLAG.BINARY, str)] + CONVERSIONS[field_type]
+        else:
+            CONVERSIONS[field_type] = [(FLAG.BINARY, str)].append(CONVERSIONS[field_type])
 
     # Alias some db_base MySQL exceptions
     IntegrityError = MySQLdb.IntegrityError

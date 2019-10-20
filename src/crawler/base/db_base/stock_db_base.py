@@ -12,10 +12,10 @@ from logging.handlers import TimedRotatingFileHandler
 from common.tushare_client.ts_client import ts_client
 
 file_path = os.path.abspath(__file__)
-print file_path
+# print file_path
 src_path = file_path.split('/')
 log_path = '/'.join(src_path[:-4]) + '/resource/logs/stock_brain.log'
-print log_path
+# print log_path
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
