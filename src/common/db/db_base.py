@@ -86,10 +86,12 @@ class DBBase(object):
         # build data.
         data = []
         sql = ""
+        table_keys = self.get_table_keys(table)
         if isinstance(result, list):
+            data_keys = result[0].keys()
+            keys = [k for k in table_keys if k in data_keys]
+            keys.sort()
             for item in result:
-                keys = item.keys()
-                keys.sort()
                 values = [item[i] for i in keys]
                 data.append(tuple(values))
                 if not sql:
@@ -98,7 +100,8 @@ class DBBase(object):
                                                            table, ", ".join(sql_keys),
                                                            ", ".join(["%s" for i in xrange(len(keys))]))
         elif isinstance(result, dict):
-            keys = result.keys()
+            data_keys = result.keys()
+            keys = [k for k in table_keys if k in data_keys]
             keys.sort()
             values = [result[i] for i in keys]
             data.append(tuple(values))
@@ -174,3 +177,9 @@ class DBBase(object):
             else:
                 db_client.execute_lastrowid(sql, *data)
                 return db_client.get(select_sql, *select_data)
+
+    def get_table_keys(self, table):
+        sql = 'desc %s' % table
+        col_descs = self.query(sql)
+        col_names = [c['Field'] for c in col_descs]
+        return col_names

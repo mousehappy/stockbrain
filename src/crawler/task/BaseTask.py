@@ -26,11 +26,15 @@ from crawler.base.db_base.stock_db_base import StockDBBase
     "cur_dt": "2019-09-08"
 }
 '''
+
+
 class BaseTask(StockDBBase):
     def __init__(self):
         super(BaseTask, self).__init__()
         ts.set_token(ts_token)
         self.ts_client = ts.pro_api()
+        self.start_dt = None
+        self.end_dt = None
 
     def close(self):
         super(BaseTask, self).close()
@@ -69,6 +73,10 @@ class BaseTask(StockDBBase):
     def get_season_end_date(self):
         month = self.dt.month
         year = self.dt.year
+        if self.end_dt:
+            cur_dt = arrow.get(self.end_dt)
+            month = cur_dt.month
+            year = cur_dt.year
         season = int(math.ceil(month / 3))
         # next_season_dt = None
         if season <= 3:
@@ -81,6 +89,10 @@ class BaseTask(StockDBBase):
     def get_last_season_end_date(self):
         month = self.dt.month
         year = self.dt.year
+        if self.end_dt:
+            cur_dt = arrow.get(self.end_dt)
+            month = cur_dt.month
+            year = cur_dt.year
         season_idx = math.ceil(month / 3.0)
         season = int(season_idx)
         # next_season_dt = None

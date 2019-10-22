@@ -6,6 +6,7 @@ import time
 import os
 from logging.handlers import TimedRotatingFileHandler
 from threading import Lock
+from aliyun.log import QueuedLogHandler
 
 
 file_path = os.path.abspath(__file__)

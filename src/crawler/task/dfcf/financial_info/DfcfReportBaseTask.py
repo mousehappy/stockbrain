@@ -93,6 +93,7 @@ class DfcfReportBaseTask(BaseTask):
                 for k,v in record.items():
                     if v == '-':
                         record[k] = None
+                self.special_process_record(record)
                 # if record['yearearlier'] == '-':
                 #     record['yearearlier'] = None
             repoart_data.extend(tmp_data)
@@ -107,10 +108,11 @@ class DfcfReportBaseTask(BaseTask):
         # print json.dumps(repoart_data)
         self.write_db(self.db_table, repoart_data)
 
+    def special_process_record(self, record):
+        return
+
     def get_report_date(self):
         pass
-
-
 
     def get_report_data(self, pageNo, enddate):
         pageSize = self.pageSize

@@ -63,6 +63,17 @@ class TaskTestBase(unittest.TestCase):
         self.init_task(task_define)
         self.assertEqual('foo'.upper(), 'FOO')
 
+    def test_dfct_season_report_appointment(self):
+        task_define = {
+            "symbol": "000001",
+            "ts_code": "000001.SZ",
+            "last_crawl_day": "2019-09-05",
+            "crawl_type": "DfcfSeasonReportAppointmentTask",
+            "cur_dt": "2019-09-01"
+        }
+        self.init_task(task_define)
+        self.assertEqual('foo'.upper(), 'FOO')
+
     def test_batch_dfct_season_report(self):
         task_define = {
             "symbol": "000001",
