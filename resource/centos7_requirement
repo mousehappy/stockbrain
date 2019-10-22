@@ -1,3 +1,5 @@
+aliyun-log-python-sdk==0.6.33
+aliyun-python-sdk-core==2.3.5
 PyMySQL==0.9.3
 arrow==0.15.2
 backports.functools-lru-cache==1.5

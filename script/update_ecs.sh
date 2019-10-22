@@ -14,7 +14,7 @@ echo $source_cmd
 $source_cmd
 
 #安装python包
-pip install -r resource/requirement
+pip install -r resource/centos7_requirement
 
 #设置环境变量
 export_cmd='export PYTHONPATH='$src_path

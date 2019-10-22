@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime, date
 # import tushare as ts
+from common.util.sls_log_service import get_logger
 
 import arrow
 
@@ -11,24 +12,24 @@ from logging.handlers import TimedRotatingFileHandler
 
 from common.tushare_client.ts_client import ts_client
 
-file_path = os.path.abspath(__file__)
-# print file_path
-src_path = file_path.split('/')
-log_path = '/'.join(src_path[:-4]) + '/resource/logs/stock_brain.log'
-# print log_path
+# file_path = os.path.abspath(__file__)
+# src_path = file_path.split('/')
+# log_path = '/'.join(src_path[:-4]) + '/resource/logs/stock_brain.log'
+#
+# logger = logging.getLogger(__name__)
+# logger.setLevel(level=logging.INFO)
+# formatter = logging.Formatter('[%(asctime)s] [%(processName)s] [%(process)d] [%(thread)d] [%(filename)s:%(lineno)d] [%(levelname)s] %(message)s')
+# # file_handler = TimedRotatingFileHandler('/Users/wjq/work/stockbrain/src/resource/logs/stock_brain.log', when='H', backupCount=30)
+# file_handler = TimedRotatingFileHandler(log_path, when='H', backupCount=30)
+# file_handler.setLevel(logging.INFO)
+# file_handler.setFormatter(formatter)
+# console_handler = logging.StreamHandler()
+# console_handler.setLevel(logging.INFO)
+# console_handler.setFormatter(formatter)
+# logger.addHandler(console_handler)
+# logger.addHandler(file_handler)
 
-logger = logging.getLogger(__name__)
-logger.setLevel(level=logging.INFO)
-formatter = logging.Formatter('[%(asctime)s] [%(processName)s] [%(process)d] [%(thread)d] [%(filename)s:%(lineno)d] [%(levelname)s] %(message)s')
-# file_handler = TimedRotatingFileHandler('/Users/wjq/work/stockbrain/src/resource/logs/stock_brain.log', when='H', backupCount=30)
-file_handler = TimedRotatingFileHandler(log_path, when='H', backupCount=30)
-file_handler.setLevel(logging.INFO)
-file_handler.setFormatter(formatter)
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
-console_handler.setFormatter(formatter)
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
+logger = get_logger(uuid=arrow.now().date().strftime('%Y-%m-%d'))
 
 
 class StockDBBase(DBBase):
