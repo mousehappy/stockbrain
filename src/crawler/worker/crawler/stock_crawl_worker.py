@@ -1,5 +1,6 @@
 import copy
 import multiprocessing
+import traceback
 from Queue import Empty
 from multiprocessing import Process
 
@@ -85,5 +86,8 @@ class CrawlerWorker(StockDBBase, Process):
 
 
 if __name__ == '__main__':
-    c = CrawlerWorker()
-    c.run()
+    try:
+        c = CrawlerWorker()
+        c.run()
+    except Exception as e:
+        logger.error(traceback.format_exc())

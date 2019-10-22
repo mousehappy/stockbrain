@@ -4,8 +4,7 @@ from crawler.base.db_base.stock_db_base import logger
 from crawler.base.scheduler.crawl_task_scheduler import CrawlTaskScheduler
 from crawler.base.stock_cmdb.StockCmdb import StockCMDB
 from crawler.base.task_generator.task_generator import TaskGenerator
-import pandas as pd
-import numpy as np
+import traceback
 
 
 class CrawlerManager(StockCMDB):
@@ -45,6 +44,9 @@ if __name__ == '__main__':
     # })
     #
     # np.random.normal()
-    cm = CrawlerManager()
-    cm.run()
+    try:
+        cm = CrawlerManager()
+        cm.run()
+    except Exception as e:
+        logger.error(traceback.format_exc())
 
