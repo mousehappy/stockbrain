@@ -72,12 +72,12 @@ class SlsLogService(object):
         conf = {'version': 1,
                 'formatters': {'rawformatter': {'class': 'logging.Formatter',
                                                 'format': '%(message)s'},
-                               # 'fileformatter': {'class': 'logging.Formatter',
-                               #                   'format': '[%(asctime)s] [%(processName)s] [%(process)d] [%(thread)d] [%(filename)s:%(lineno)d] [%(levelname)s] %(message)s'}
+                               'fileformatter': {'class': 'logging.Formatter',
+                                                 'format': '[%(asctime)s] [%(processName)s] [%(process)d] [%(thread)d] [%(filename)s:%(lineno)d] [%(levelname)s] %(message)s'}
                                },
                 'handlers': {'sls_handler': {'()':'aliyun.log.QueuedLogHandler',
                                              'level': 'INFO',
-                                             'formatter': 'rawformatter',
+                                             'formatter': 'fileformatter',
 
                                              # custom args:
                                              'end_point': self.endpoint,
@@ -88,20 +88,20 @@ class SlsLogService(object):
                                              # 'fields': ['record_name', 'file_path', 'thread_id', 'thread_name',
                                              #            'process_id', 'process_name', 'level', 'func_name',
                                              #            'module', 'line_no'],
-                                             'extract_kv': True,
+                                             'extract_kv': False,
                                              'extract_kv_drop_message': False,
                                              'buildin_fields_prefix': 'sys_'
                                              },
                              'file_handler': {'class': 'logging.handlers.TimedRotatingFileHandler',
                                               'level': 'INFO',
-                                              'formatter': 'rawformatter',
+                                              'formatter': 'fileformatter',
                                               'filename': log_path,
                                               'when': 'D',
                                               'backupCount': 30
                                               },
                              'console_handler': {'class': 'logging.StreamHandler',
                                               'level': 'INFO',
-                                              'formatter': 'rawformatter',
+                                              'formatter': 'fileformatter',
                                               }
                              },
                 'loggers': {'sls': {'handlers': ['sls_handler', 'file_handler', 'console_handler'],
@@ -142,16 +142,20 @@ class SlsLogService(object):
         is_print：是否打印到console
     '''
     def info(self, message, step=None, is_print=False):
-        self.logger.info(self.build_msg(message, "INFO", step, is_print))
+        # self.logger.info(self.build_msg(message, "INFO", step, is_print))
+        self.logger.info(message)
 
     def debug(self, message, step=None, is_print=False):
-        self.logger.debug(self.build_msg(message, "DEBUG", step, is_print))
+        # self.logger.debug(self.build_msg(message, "DEBUG", step, is_print))
+        self.logger.debug(message)
 
     def error(self, message, step=None, is_print=False):
-        self.logger.error(self.build_msg(message, "ERROR", step, is_print))
+        # self.logger.error(self.build_msg(message, "ERROR", step, is_print))
+        self.logger.error(message)
 
     def warn(self, message, step=None, is_print=False):
-        self.logger.warn(self.build_msg(message, "WARN", step, is_print))
+        # self.logger.warn(self.build_msg(message, "WARN", step, is_print))
+        self.logger.warn(message)
 
     def set_total_steps(self, total_steps):
         self.total_step = float(total_steps)
@@ -186,17 +190,9 @@ def get_logger(uuid=None, console_print=False,
                access_key='1o9vNeR6RqyulO6LWYUxK04ECIo9n9',
                project='shaozhe-private',
                logstore='stockbrain_log'):
-    if uuid:
-        return SlsLogService(uuid, console_print, endpoint=endpoint, access_id=access_id,
+    sls_log = SlsLogService(uuid, console_print, endpoint=endpoint, access_id=access_id,
                              access_key=access_key, project=project, logstore=logstore)
-    if 'action_uuid' in os.environ.keys():
-        return SlsLogService(os.environ['action_uuid'], console_print)
-    elif 'job_execute_id' in os.environ.keys():
-        return SlsLogService('vnet_job_' + os.environ['job_execute_id'], console_print)
-    else:
-        console_print = True
-        return SlsLogService('test', console_print, endpoint=endpoint, access_id=access_id,
-                             access_key=access_key, project=project, logstore=logstore)
+    return sls_log.logger
     # raise RuntimeError('Initialize sls logger failed! Make sure uuid is supplied or vnet job')
 
 
@@ -204,15 +200,15 @@ if __name__ == '__main__':
     # 初始化logger，uuid为唯一标识符，变更平台中，使用action_uuid作为uuid初始化logger对象
     logger = get_logger(uuid='211c31cb-2ca8-43f6-b095-e2913d4e0e9d',)
     # 打印info日志，step用来展示当前操作步骤
-    logger.info('test test test 1111', step="init")
+    logger.info('test test test 1111')
     # set_total_steps: 设置操作总步数
     # set_step: 设置当前操作步数
     # 在进程一开始的时候调用set_total_steps，用来表示一共有多少步骤
     # 在执行过程中，不断调用set_step，设置递增的当前执行到的步骤
     # 这两个函数用来计算当前执行进度的的百分比
-    logger.set_total_steps(650)
-    logger.set_step(100)
-    time.sleep(2)
-    logger.set_step(200)
+    # logger.set_total_steps(650)
+    # logger.set_step(100)
+    # time.sleep(2)
+    # logger.set_step(200)
     # sls_log.logger.error("get error, reason=103 return_code=333 agent_type=ios")
 

@@ -66,7 +66,7 @@ class DfcfSeasonForecastTask(BaseTask):
         # start_dt = Arrow.fromdate(task_define['last_crawl_day'])  # .strftime('%Y%m%d')
         # end_dt = Arrow.fromdate(task_define['cur_dt'])
         # for r_dt in Arrow.range('day', start_dt, end_dt):
-        logger.info('Start to crawl data of task: %s, dt: %s' % (API_NAME, self.dt))
+        logger.info('Start to crawl data of task: %s, dt: %s' % (self.__class__.__name__, self.dt))
         end_dt = self.get_forecast_date()
         pageNo = 1
         total_pages = -1

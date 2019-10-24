@@ -4,7 +4,7 @@ import json
 from common.db.db_base import DBBase
 from crawler.base.db_base.stock_db_base import logger
 from crawler.task.BaseTask import BaseTask
-from arrow import Arrow
+import arrow
 
 '''
 {
@@ -39,13 +39,12 @@ class MonthlyTradeInfoTask(BaseTask):
         super(MonthlyTradeInfoTask, self).close()
 
     def run(self, task_define):
-        Arrow.now().date()
         # TODO: 如果start_dt和end_dt只差一天，则只有当start_dt为每月第一天时，才运行
-        start_dt = Arrow.fromdate(task_define['last_crawl_day']) #.strftime('%Y%m%d')
-        end_dt = Arrow.fromdate(task_define['cur_dt'])
+        start_dt = arrow.get(task_define['last_crawl_day']) #.strftime('%Y%m%d')
+        end_dt = arrow.get(task_define['cur_dt'])
         day_span = self.get_day_span(start_dt, end_dt)
         if day_span > 1:
-            for r_dt in Arrow.range('day', start_dt, end_dt):
+            for r_dt in arrow.Arrow.range('day', start_dt, end_dt):
                 if self.is_last_day_of_month(r_dt):
                     logger.info('Start to monthly data of task: %s, dt: %s' % (API_NAME, r_dt))
                     t_dt = r_dt.strftime('%Y%m%d')

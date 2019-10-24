@@ -88,6 +88,8 @@ class DBBase(object):
         sql = ""
         table_keys = self.get_table_keys(table)
         if isinstance(result, list):
+            if not result:
+                return
             data_keys = result[0].keys()
             keys = [k for k in table_keys if k in data_keys]
             keys.sort()
