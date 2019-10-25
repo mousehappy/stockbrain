@@ -1,6 +1,6 @@
 # coding=utf-8
 from common.db.db_base import DBBase
-from crawler.base.db_base.stock_db_base import logger
+from common.util.sls_log_service import get_logger
 from crawler.task.BaseTask import BaseTask
 from arrow import Arrow
 import arrow
@@ -28,6 +28,8 @@ API_NAME = 'daily_basic'
 '''
 利润表: https://tushare.pro/document/2?doc_id=33
 '''
+
+logger = get_logger()
 
 
 class SeasonIncomeTask(BaseTask):

@@ -7,7 +7,7 @@ import arrow
 import requests
 
 from common.util.StringUtils import genRandomString
-from crawler.base.db_base.stock_db_base import logger
+from common.util.sls_log_service import get_logger
 from crawler.task.BaseTask import BaseTask
 import numpy as np
 import listcompare
@@ -39,6 +39,8 @@ url_example: http://37.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=1000&po=1&np
 '''
 
 base_url = 'http://{randint}.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=1000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:90+t:3&fields=f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f14,f15,f16,f17,f18,f20,f21,f62,f63,f64,f65,f66,f67,f68,f69,f70,f71,f72,f73,f74,f75,f76,f77,f78,f79,f80,f81,f82,f83,f84,f85,f86,f87&_={ts}'
+
+logger = get_logger()
 
 
 class DfcfConceptInfoDailyTask(BaseTask):

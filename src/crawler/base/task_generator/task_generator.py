@@ -2,7 +2,9 @@ import json
 import arrow
 from crawler.base.db_base.stock_db_base import StockDBBase
 from crawler.base.task_generator.task_configuration import task_configs
-from crawler.base.db_base.stock_db_base import logger
+from common.util.sls_log_service import get_logger
+
+logger = get_logger()
 
 
 class TaskGenerator(StockDBBase):

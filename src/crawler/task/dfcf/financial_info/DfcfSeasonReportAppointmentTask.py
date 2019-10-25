@@ -8,7 +8,7 @@ import requests
 
 from common.db.db_base import DBBase
 from common.util.StringUtils import genRandomString
-from crawler.base.db_base.stock_db_base import logger
+from common.util.sls_log_service import get_logger
 from crawler.task.BaseTask import BaseTask
 from arrow import Arrow
 
@@ -42,6 +42,7 @@ url_example: http://dcfm.eastmoney.com/em_mutisvcexpandinterface/api/js/get?type
 
 # base_url = 'http://dcfm.eastmoney.com//em_mutisvcexpandinterface/api/js/get?type=YJBB21_YJYG&token=70f12f2f4f091e459a279469fe49eca5&st=ndate&sr=-1&p={pageNo}&ps={pageSize}&js=var%20{varName}={pages:(tp),data:%20(x),font:(font)}&filter=(IsLatest=%27T%27)(securitytypecode%20in%20(%27058001001%27,%27058001002%27))(enddate=^{enddate}^)&rt={rt}'
 base_url = 'http://dcfm.eastmoney.com/em_mutisvcexpandinterface/api/js/get?type=YJBB21_YYPL&token=70f12f2f4f091e459a279469fe49eca5&st=frdate&sr=1&p={pageNo}&ps={pageSize}&js={"pages":(tp),"data":%20(x),"font":(font)}&filter=(securitytypecode=%27058001001%27)(reportdate=^{enddate}^)&rt={rt}'
+logger = get_logger()
 
 
 class DfcfSeasonReportAppointmentTask(DfcfReportBaseTask):

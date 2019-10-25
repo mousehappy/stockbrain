@@ -1,6 +1,6 @@
 # coding=utf-8
 from common.db.db_base import DBBase
-from crawler.base.db_base.stock_db_base import logger
+from common.util.sls_log_service import get_logger
 from crawler.task.BaseTask import BaseTask
 import arrow
 
@@ -28,6 +28,7 @@ API_NAME = 'moneyflow'
 个股资金流向: https://tushare.pro/document/2?doc_id=170
 '''
 
+logger = get_logger()
 
 class DailyMoneyflowTask(BaseTask):
     def __init__(self):

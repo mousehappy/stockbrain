@@ -1,10 +1,12 @@
 import time
 
-from crawler.base.db_base.stock_db_base import logger
+from common.util.sls_log_service import get_logger
 from crawler.base.scheduler.crawl_task_scheduler import CrawlTaskScheduler
 from crawler.base.stock_cmdb.StockCmdb import StockCMDB
 from crawler.base.task_generator.task_generator import TaskGenerator
 import traceback
+
+logger = get_logger()
 
 
 class CrawlerManager(StockCMDB):

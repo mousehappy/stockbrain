@@ -34,7 +34,7 @@ logger = get_logger(uuid=arrow.now().date().strftime('%Y-%m-%d'))
 
 class StockDBBase(DBBase):
     def __init__(self):
-        super(StockDBBase, self).__init__('stock_db')
+        super(StockDBBase, self).__init__('stock_test')
         self.dt = arrow.now().date()
         self.crawl_dt = self.get_crawl_date()
         # ts.set_token(ts_token)

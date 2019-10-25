@@ -1,5 +1,7 @@
 from crawler.base.db_base.stock_db_base import StockDBBase
-from crawler.base.db_base.stock_db_base import logger
+from common.util.sls_log_service import get_logger
+
+logger = get_logger()
 
 
 class StockCMDB(StockDBBase):
