@@ -3,7 +3,7 @@ import os
 from datetime import datetime, date
 # import tushare as ts
 from common.util.sls_log_service import get_logger
-
+import platform
 import arrow
 
 from common.db.db_base import DBBase
@@ -31,10 +31,19 @@ from common.tushare_client.ts_client import ts_client
 
 logger = get_logger(uuid=arrow.now().date().strftime('%Y-%m-%d'))
 
+os = platform.system()
+db_config = 'stock_db'
+if os == 'Darwin':
+    db_config = 'stock_test'
+elif os == 'Linux':
+    db_config = 'stock_db'
+else:
+    raise RuntimeError("OS not support!")
+
 
 class StockDBBase(DBBase):
     def __init__(self):
-        super(StockDBBase, self).__init__('stock_test')
+        super(StockDBBase, self).__init__(db_config)
         self.dt = arrow.now().date()
         self.crawl_dt = self.get_crawl_date()
         # ts.set_token(ts_token)
