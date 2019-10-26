@@ -3,14 +3,15 @@ import multiprocessing
 import traceback
 from Queue import Empty
 from multiprocessing import Process
-
-from crawler.base.db_base.stock_db_base import StockDBBase, logger
+from common.util.sls_log_service import get_logger
+from crawler.base.db_base.stock_db_base import StockDBBase
 import importlib
 
 from crawler.worker.crawler.TaskFactory import TaskFactory
 
 DEFAULT_TASK_GET_TIMEOUT = 10
 
+logger = get_logger()
 
 class CrawlerWorker(StockDBBase, Process):
     def __init__(self, p_no, task_queue=multiprocessing.Queue(), result_queue=multiprocessing.Queue()):
@@ -83,6 +84,8 @@ class CrawlerWorker(StockDBBase, Process):
             except Empty:
                 logger.info("Crawl work process exit! Process no: %s" % self.p_no)
                 break
+            except Exception as e:
+                logger.error("Crawl worker-%s with exception: %s" % (self.p_no, traceback.format_exc()))
 
 
 if __name__ == '__main__':

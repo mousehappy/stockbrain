@@ -29,8 +29,6 @@ from common.tushare_client.ts_client import ts_client
 # logger.addHandler(console_handler)
 # logger.addHandler(file_handler)
 
-logger = get_logger(uuid=arrow.now().date().strftime('%Y-%m-%d'))
-
 os = platform.system()
 db_config = 'stock_db'
 if os == 'Darwin':
@@ -84,10 +82,20 @@ class StockDBBase(DBBase):
             ts_date = now_dt.format('YYYY-MM-DD')
         return ts_date
 
+    def is_trade_date(self, dt=None):
+        if not dt:
+            dt = self.get_crawl_date()
+        dt = arrow.get(dt).format('YYYYMMDD')
+        sql = 'select * from stock_trade_date where cal_date = "%s"' % dt
+        trade_dates = self.query(sql)
+        return not (not trade_dates or trade_dates[0]['is_open'] == 0)
+
 
 if __name__ == '__main__':
+    logger = get_logger(uuid=arrow.now().date().strftime('%Y-%m-%d'))
     s = StockDBBase()
     # rows = s.query('select * from stock_task_scheduler limit 10')
     # s.format_result(rows)
-    logger.info("Test!")
+    # logger.info("Test!")
+    print s.is_trade_date()
     # print json.dumps(rows)

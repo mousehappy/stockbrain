@@ -1,4 +1,5 @@
-from crawler.base.db_base.stock_db_base import StockDBBase, logger
+from common.util.sls_log_service import get_logger
+from crawler.base.db_base.stock_db_base import StockDBBase
 from multiprocessing.pool import Pool
 from multiprocessing import Queue
 from crawler.worker.crawler.stock_crawl_worker import CrawlerWorker
@@ -6,6 +7,7 @@ from crawler.worker.crawler.stock_crawl_worker import CrawlerWorker
 MULTI_PROCESS_NO = 2
 PROCESS_EXIT_TIMEOUT = 120
 
+logger = get_logger()
 
 class CrawlTaskScheduler(StockDBBase):
     def __init__(self):
