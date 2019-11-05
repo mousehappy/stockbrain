@@ -13,6 +13,7 @@ DEFAULT_TASK_GET_TIMEOUT = 10
 
 logger = get_logger()
 
+
 class CrawlerWorker(StockDBBase, Process):
     def __init__(self, p_no, task_queue=multiprocessing.Queue(), result_queue=multiprocessing.Queue()):
         StockDBBase.__init__(self)
@@ -33,7 +34,7 @@ class CrawlerWorker(StockDBBase, Process):
             logger.info('Start execute crawl task, crawl type: %s, symbol: %s' % (crawl_type, symbol))
         else:
             logger.info('Failed to update crawl task to start, crawl type: %s, symbol: %s' % (crawl_type, symbol))
-        
+
     def finish_crawl_task(self, symbol, crawl_type, dt):
         task_update_sql = 'update stock_task_scheduler set crawl_status="finish", crawl_end=now(), last_crawl_day=%s ' \
                           'where symbol=%s and crawl_type=%s'
@@ -61,31 +62,36 @@ class CrawlerWorker(StockDBBase, Process):
         "cur_dt": "2019-09-08"
     }
     '''
+
     def run(self):
         while self.is_running:
             try:
                 task_define = self.task_queue.get(timeout=DEFAULT_TASK_GET_TIMEOUT)
                 if not task_define:
                     break
-                symbol = task_define['symbol']
-                crawl_type = task_define['crawl_type']
-                task = TaskFactory.init_task_instance(crawl_type)
-                # task_name = 'crawler.task.%s' % crawl_type
-                # m = importlib.import_module(task_name)
-                # t_clz = getattr(m, crawl_type)
-                # task = t_clz()
-                self.start_crawl_task(symbol, crawl_type)
-                result = task.run(task_define)
-                task.close()
-                self.finish_crawl_task(symbol, crawl_type, self.crawl_dt)
-                result_dict = copy.deepcopy(task_define)
-                result_dict['result'] = result
-                self.result_queue.put(result_dict)
             except Empty:
                 logger.info("Crawl work process exit! Process no: %s" % self.p_no)
                 break
-            except Exception as e:
-                logger.error("Crawl worker-%s with exception: %s" % (self.p_no, traceback.format_exc()))
+            for i in xrange(5):
+                try:
+                    symbol = task_define['symbol']
+                    crawl_type = task_define['crawl_type']
+                    task = TaskFactory.init_task_instance(crawl_type)
+                    # task_name = 'crawler.task.%s' % crawl_type
+                    # m = importlib.import_module(task_name)
+                    # t_clz = getattr(m, crawl_type)
+                    # task = t_clz()
+                    self.start_crawl_task(symbol, crawl_type)
+                    result = task.run(task_define)
+                    task.close()
+                    self.finish_crawl_task(symbol, crawl_type, self.crawl_dt)
+                    result_dict = copy.deepcopy(task_define)
+                    result_dict['result'] = result
+                    self.result_queue.put(result_dict)
+                    break
+                except Exception as e:
+                    logger.error("Crawl worker-%s with exception, failed count: %s, exception detail: %s" %
+                                 (self.p_no, i, traceback.format_exc()))
 
 
 if __name__ == '__main__':
