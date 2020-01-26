@@ -90,8 +90,8 @@ class CrawlerWorker(StockDBBase, Process):
                     self.result_queue.put(result_dict)
                     break
                 except Exception as e:
-                    logger.error("Crawl worker-%s with exception, failed count: %s, exception detail: %s" %
-                                 (self.p_no, i, traceback.format_exc()))
+                    logger.error("Crawl worker-%s with exception, failed count: %s, error message: %s, exception detail: %s" %
+                                 (self.p_no, i, e.message, traceback.format_exc()))
 
 
 if __name__ == '__main__':

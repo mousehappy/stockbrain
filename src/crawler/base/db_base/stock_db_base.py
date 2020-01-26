@@ -76,9 +76,9 @@ class StockDBBase(DBBase):
     def get_crawl_date(self):
         now_dt = arrow.now()
         hour = now_dt.hour
-        if hour < 8:
+        if hour < 17:
             ts_date = now_dt.shift(days=-1).format('YYYY-MM-DD')
-        elif hour > 15:
+        elif hour >= 17:
             ts_date = now_dt.format('YYYY-MM-DD')
         return ts_date
 
