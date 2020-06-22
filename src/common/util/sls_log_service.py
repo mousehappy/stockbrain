@@ -46,8 +46,8 @@ class SlsLogService(object):
             action_uuid,
             console_print=False,
             endpoint='cn-hangzhou.log.aliyuncs.com',
-            access_id='LTAI4vHYl1tgSbKJ',
-            access_key='1o9vNeR6RqyulO6LWYUxK04ECIo9n9',
+            access_id='',
+            access_key='',
             project='shaozhe-private',
             logstore='stockbrain_log'):
         super(SlsLogService, self).__init__()
@@ -186,8 +186,8 @@ class SlsLogService(object):
 '''
 def get_logger(uuid=None, console_print=False,
                endpoint='cn-hangzhou.log.aliyuncs.com',
-               access_id='LTAI4vHYl1tgSbKJ',
-               access_key='1o9vNeR6RqyulO6LWYUxK04ECIo9n9',
+               access_id='',
+               access_key='',
                project='shaozhe-private',
                logstore='stockbrain_log'):
     sls_log = SlsLogService(uuid, console_print, endpoint=endpoint, access_id=access_id,
